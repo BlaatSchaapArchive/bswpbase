@@ -1,0 +1,2 @@
+# bswpbase
+BlaatSchaap WordPress Base
