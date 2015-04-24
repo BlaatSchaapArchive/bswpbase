@@ -5,6 +5,11 @@ class BlaatSchaap {
     // TODO: dependency tester for example class_exists(SimpleXMLElement);
 
 
+  public function isPageRegistered($menu_slug){
+    global $_parent_pages;
+    return isset($_parent_pages[$menu_slug]) ;
+  }
+
 
   public function GenerateOptions($tabs, $values=NULL, $action=NULL, $echo=true) {
     // todo tab hiding
