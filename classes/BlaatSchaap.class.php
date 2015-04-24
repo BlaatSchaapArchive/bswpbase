@@ -6,78 +6,96 @@ class BlaatSchaap {
 
 
 
-  public function GenerateOptions($options, $action=NULL, $values=NULL, $echo=true) {
-    // how to handle id on edit // hidden fields
-    // rename the colums in the database?
+  public function GenerateOptions($tabs, $values=NULL, $action=NULL, $echo=true) {
+    // todo tab hiding
+    // configuration for submit button?
 
-    // sort the options in tabs
-    // general / oauth / api / hidden
-    // --> This requires also some JavaScript to support it..
-    // --> We also require JavaScript to show/hide required fields <--
-   // Well... planned features ... let's get the basics to work first! 
-
-
-
-    // what about using XML to generate a form rather then just
-    // typing some HTML here?
     $xmlroot = new SimpleXMLElement('<form method="post" />');
     if ($action) $xmlroot->addAttribute("action", $action);
+    $xmlmenu = $xmlroot->addChild("menu");
+    $xmltabs = $xmlroot->addChild("tabs");    
 
-    $xmltable = $xmlroot->addChild("table");  
-    foreach ($options as $option) {
-    $xmlrow = $xmlroot->addChild("tr");
-    $xmlrow->addChild("th", $option['title']);
+    $firstTab = true;
+    foreach  ($tabs as $tab) {
+      $xmlbutton = $xmlmenu->addChild("button", $tab->display);
+      $xmlbutton->addAttribute("name", $tab->name ."_btn");
+      $xmlbutton->addAttribute("id", $tab->name   ."_btn");
+      $xmlbutton->addAttribute("class", "blaatConfigBtn");
+      $xmlbutton->addAttribute("onclick", "alert('".$tab->name."')"); // test
 
+      $xmltab = $xmltabs->addChild("tab");    
+      $xmltab->addAttribute("name", $tab->name ."_tab");
+      $xmltab->addAttribute("id", $tab->name   ."_tab");
+      $xmltab->addAttribute("class", "blaatConfigTab shown");
 
-      // if we don't have $xmlselect $xmltextarea $xmlinput
-      // but a single name we can set the common attributes at the same place.
-      switch ($option['type']) {
-        case "select":
-          $xmlselect = $xmlrow->addChild("td")->addChild("select");
-          $xmlselect->addAttribute("name",$option['name']);
-          $xmlselect->addAttribute("id",$option['name']);     
-          foreach($option['options'] as $opt) {
-            $xmloption=$xmlselect->addChild("option", $opt['display']);
-            $xmloption->addAttribute("value",$opt['value']);
-            if ($values && $values[$option['name']]) {
-              if ($values[$option['name']]==$opt['value']) $xmloption->addAttribute("selected","true");
-            } else
-            if ($option['default']==$opt['value']) $xmloption->addAttribute("selected","true");
-          } 
-          break;
-        case "textarea":
-          if ($values && isset($values[$option['name']])) {
-            $xmltextarea = $xmlrow->addChild("td")->addChild("textarea",$values[$option['name']]);      
+      $xmltable = $xmltab->addChild("table");  
+
+      foreach ($tab->options as $option) {
+
+        $xmlrow = $xmltab->addChild("tr");
+        $xmlrow->addChild("th", $option->title);
+        switch ($option->type) {
+          case "select":
+            $xmloption = $xmlrow->addChild("td")->addChild("select");
+            foreach($option->options as $opt) {
+              $xmlselectoption=$xmloption->addChild("option", $opt->display);
+              $xmlselectoption->addAttribute("value",$opt->value);
+          // TODO values will be turned into array later
+              if ($values && $values[$option->name]) {
+                if ($values[$option->name]==$opt->value) $xmlselectoption->addAttribute("selected",true);
+              } else
+              if ($option->default==$opt->value) $xmlselectoption->addAttribute("selected",true);
+            } 
+            break;
+          case "textarea":
+            if ($values && isset($values[$option->name])) {
+              $xmloption = $xmlrow->addChild("td")->addChild("textarea",$values[$option->name]);      
+            } else {
+              $xmloption = $xmlrow->addChild("td")->addChild("textarea");
+            }
+            break;
+          default:
+            $xmloption = $xmlrow->addChild("td")->addChild("input");
+            $xmloption->addAttribute("type",$option->type);
+          if ($option->type=="checkbox") {
+            if ($values) { 
+              if (isset($values[$option->name]) && $values[$option->name]) 
+                $xmloption->addAttribute("checked","true");
+              } else if ($option->default==true) $xmloption->addAttribute("checked",true);
           } else {
-            $xmltextarea = $xmlrow->addChild("td")->addChild("textarea");
+            if ($values) {
+              if(isset($values[$option->name])) {
+                $xmloption->addAttribute("value",$values[$option->name]);      
+              }
+            } elseif ($option->default) $xmloption->addAttribute("value",$option->default); 
           }
-          $xmltextarea->addAttribute("name",$option['name']);
-          $xmltextarea->addAttribute("id",$option['name']);    
-          break;
-        default:
-          $xmlinput = $xmlrow->addChild("td")->addChild("input");
-          $xmlinput->addAttribute("type",$option['type']);
-          $xmlinput->addAttribute("name",$option['name']);
-          $xmlinput->addAttribute("id",$option['name']);      
-          if ($values && isset($values[$option['name']])) {
-            $xmlinput->addAttribute("value",$values[$option['name']]);      
-          } 
-          if ($option['type']=="checkbox" && $option['default']==true) $xmlinput->addAttribute("checked","true");
-      } // end switch
-    } // end foreach
-
-    $xmlrow = $xmlroot->addChild("tr");
-    $xmlrow->addChild("th");
-                                        // TODO:: Distinguise between Add/Update
-    $xmlrow->addChild("td")->addChild("button",  __("Save"))->addAttribute("type","submit");
-
-  
-
-
-    if ($echo) echo $xmlroot->AsXML();
+        }
+        $xmloption->addAttribute("name",$option->name);
+        $xmloption->addAttribute("id",$option->name);    
+        if ($option->required==true) $xmloption->addAttribute("required",true);
+      }
+    }  
+   if ($echo) echo $xmlroot->AsXML();
     return $xmlroot;
   }
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
 }
 
 

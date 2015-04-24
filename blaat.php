@@ -11,7 +11,8 @@ License: BSD
 
 
 require_once("classes/BlaatSchaap.class.php");  // beginning a class
-
+require_once("classes/BlaatConfigOption.class.php");  // config generation
+require_once("classes/BlaatConfigTab.class.php");  // config generation
 
 //------------------------------------------------------------------------------
 // BlaatSchaap Plugins Page
