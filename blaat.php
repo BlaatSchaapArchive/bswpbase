@@ -14,6 +14,9 @@ require_once("classes/BlaatSchaap.class.php");  // beginning a class
 require_once("classes/BlaatConfigOption.class.php");  // config generation
 require_once("classes/BlaatConfigTab.class.php");  // config generation
 
+add_action("admin_enqueue_scripts", "BlaatSchaap::enqueueAdminJS" );
+
+
 //------------------------------------------------------------------------------
 // BlaatSchaap Plugins Page
 //------------------------------------------------------------------------------
