@@ -7,53 +7,60 @@ class BlaatSchaap {
 
     
     
-
+//------------------------------------------------------------------------------
   function enqueueAdminJS(){
     wp_enqueue_script("BlaatSchaapJS" , plugin_dir_url(__FILE__) . "../js/BlaatSchaap.js");
   }
-
-
+//------------------------------------------------------------------------------
+  function enqueueAdminCSS(){
+    wp_register_style("BlaatConfig" , plugin_dir_url(__FILE__) . "../css/BlaatConfig.css");
+    wp_enqueue_style( "BlaatConfig");
+  }
+//------------------------------------------------------------------------------
   public function isPageRegistered($menu_slug){
     global $_parent_pages;
     return isset($_parent_pages[$menu_slug]) ;
   }
-
-
-  public function GenerateOptions($tabs, $values=NULL, $action=NULL, $echo=true) {
-    // todo tab hiding
-    // configuration for submit button?
-
+//------------------------------------------------------------------------------
+  public function GenerateOptions($tabs, $values=NULL, $header=NULL,$buttonID=NULL, $buttonTitle=NULL ,$action=NULL, $echo=true) {
 
     $xmlroot = new SimpleXMLElement('<div />');
     
+    if ($header!=NULL)     $xmlmenu = $xmlroot->addChild("h1", $header);
+
     $xmlmenu = $xmlroot->addChild("span");
     $xmltabs = $xmlroot->addChild("form");    
     $xmltabs->addAttribute("enctype","multipart/form-data");
     $xmltabs->addAttribute("method","post");
     if ($action) $xmltabs->addAttribute("action", $action);
 
-
-
     $hide=array();
     $allTabs=array();
     $firstTab = true;
     foreach  ($tabs as $tab) {
 
-      $alltabs[]=$tab->name   ."_tab"; // to export to JS client side 
+      if ($tab->hidden) {
+        $xmltab = $xmltabs->addChild("tab");    
+        $xmltab->addAttribute("name", $tab->name ."_hiddentab");
+        $xmltab->addAttribute("id", $tab->name   ."_hiddentab");
+        $xmltab->addAttribute("class", "blaatConfigHiddenTab");
 
-      $xmlbutton = $xmlmenu->addChild("button", $tab->display);
-      $xmlbutton->addAttribute("name", $tab->name ."_btn");
-      $xmlbutton->addAttribute("id", $tab->name   ."_btn");
-      $xmlbutton->addAttribute("class", "blaatConfigBtn");
-      $xmlbutton->addAttribute("onclick", "showOnlyElement('".$tab->name."_tab', alltabs)"); // test
+        } else {
+        $alltabs[]=$tab->name   ."_tab"; // to export to JS client side 
 
-      $xmltab = $xmltabs->addChild("tab");    
-      $xmltab->addAttribute("name", $tab->name ."_tab");
-      $xmltab->addAttribute("id", $tab->name   ."_tab");
-      $xmltab->addAttribute("class", "blaatConfigTab");
+        $xmlbutton = $xmlmenu->addChild("button", $tab->display);
+        $xmlbutton->addAttribute("name", $tab->name ."_btn");
+        $xmlbutton->addAttribute("id", $tab->name   ."_btn");
+        $xmlbutton->addAttribute("class", "blaatConfigBtn");
+        $xmlbutton->addAttribute("onclick", "showOnlyElement('".$tab->name."_tab', alltabs)"); // test
 
+        $xmltab = $xmltabs->addChild("tab");    
+        $xmltab->addAttribute("name", $tab->name ."_tab");
+        $xmltab->addAttribute("id", $tab->name   ."_tab");
+        $xmltab->addAttribute("class", "blaatConfigTab");
+      }
       $xmltable = $xmltab->addChild("table");  
-
+      
       foreach ($tab->options as $option) {
 
         $xmlrow = $xmltable->addChild("tr");
@@ -82,6 +89,7 @@ class BlaatSchaap {
             $xmloption = $xmlrow->addChild("td")->addChild("input");
             $xmloption->addAttribute("type",$option->type);
           if ($option->type=="checkbox") {
+            $xmloption->addAttribute("value","1");
             if ($values) { 
               if (isset($values[$option->name]) && $values[$option->name]) 
                 $xmloption->addAttribute("checked","true");
@@ -100,7 +108,16 @@ class BlaatSchaap {
       }
     }  
 
-    $xmlSaveButton = $xmltabs->addChild("button", __("Save"));
+    if ($buttonTitle==NULL) $buttonTitle=__("Save");
+    $xmlSaveButton = $xmltabs->addChild("button", $buttonTitle);
+    if ($buttonID==NULL) $buttonID = "save";
+    $xmlSaveButton->addAttribute("id", $buttonID);
+    $xmlSaveButton->addAttribute("name", $buttonID);
+
+
+    $xmlCancelButton = $xmltabs->addChild("button", __("Cancel"));
+    $xmlCancelButton->addAttribute("id",   "cancel");
+    $xmlCancelButton->addAttribute("name", "cancel");
 
 
     $xmlroot->addChild("script", "
@@ -108,8 +125,6 @@ class BlaatSchaap {
       window.onload = function () { showFirstElement(alltabs);};"
     );
     return BlaatSchaap::xml2html($xmlroot, $echo);  
-     //if ($echo) echo $xmlroot->AsXML();
-     //return $xmlroot;
   }
 
   function xml2html($xmlroot, $echo=true) {

@@ -15,6 +15,7 @@ require_once("classes/BlaatConfigOption.class.php");  // config generation
 require_once("classes/BlaatConfigTab.class.php");  // config generation
 
 add_action("admin_enqueue_scripts", "BlaatSchaap::enqueueAdminJS" );
+add_action("admin_enqueue_scripts", "BlaatSchaap::enqueueAdminCSS" );
 
 
 //------------------------------------------------------------------------------
