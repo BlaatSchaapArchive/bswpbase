@@ -85,25 +85,36 @@ class BlaatSchaap {
               $xmloption = $xmlrow->addChild("td")->addChild("textarea");
             }
             break;
-          default:
-            $xmloption = $xmlrow->addChild("td")->addChild("input");
-            $xmloption->addAttribute("type",$option->type);
-          if ($option->type=="checkbox") {
+          case "checkbox":
+            $xmltd = $xmlrow->addChild("td");
+
+            $xmlhiddenoption=$xmltd->addChild("input");
+            $xmlhiddenoption->addAttribute("type","hidden");
+            $xmlhiddenoption->addAttribute("value","0");
+            $xmlhiddenoption->addAttribute("name",$option->name);
+            $xmlhiddenoption->addAttribute("id",$option->name."_hidden");    
+
+            $xmloption=$xmltd->addChild("input");
+            $xmloption->addAttribute("type","checkbox");
             $xmloption->addAttribute("value","1");
             if ($values) { 
               if (isset($values[$option->name]) && $values[$option->name]) 
                 $xmloption->addAttribute("checked","true");
-              } elseif ($option->default==true) {
-                $xmloption->addAttribute("checked",true);
-              }
-          } else {
+            } elseif ($option->default==true) {
+              $xmloption->addAttribute("checked",true);
+            }
+            break;
+
+          default:
+            $xmloption = $xmlrow->addChild("td")->addChild("input");
+            $xmloption->addAttribute("type",$option->type);
             if ($values) {
               if(isset($values[$option->name])) {
                 $xmloption->addAttribute("value",$values[$option->name]);      
               }
             } elseif ($option->default) $xmloption->addAttribute("value",$option->default); 
-          }
         }
+
         $xmloption->addAttribute("name",$option->name);
         $xmloption->addAttribute("id",$option->name);    
         //if ($option->required==true) $xmloption->addAttribute("required",true);
