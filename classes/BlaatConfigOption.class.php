@@ -15,7 +15,7 @@ class BlaatConfigOption{
 		$this->title=$title;
 		$this->type=$type;
 		$this->required=$required;
-		$this->defaultValue=$default;
+		$this->default=$default;
 		$this->options=array();
     }
 	function addOption($option) {

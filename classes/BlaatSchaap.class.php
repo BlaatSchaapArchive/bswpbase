@@ -93,7 +93,9 @@ class BlaatSchaap {
             if ($values) { 
               if (isset($values[$option->name]) && $values[$option->name]) 
                 $xmloption->addAttribute("checked","true");
-              } else if ($option->default==true) $xmloption->addAttribute("checked",true);
+              } elseif ($option->default==true) {
+                $xmloption->addAttribute("checked",true);
+              }
           } else {
             if ($values) {
               if(isset($values[$option->name])) {
@@ -104,7 +106,8 @@ class BlaatSchaap {
         }
         $xmloption->addAttribute("name",$option->name);
         $xmloption->addAttribute("id",$option->name);    
-        if ($option->required==true) $xmloption->addAttribute("required",true);
+        //if ($option->required==true) $xmloption->addAttribute("required",true);
+        // required doesn't seem to work as desired? disable it for now.
       }
     }  
 
