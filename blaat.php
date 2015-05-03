@@ -3,7 +3,7 @@
 Plugin Name: BlaatSchaap Base
 Plugin URI: http://code.blaatschaap.be
 Description: Common code for all BlaatSchaap plugin releases
-Version: 0.1
+Version: 0.2
 Author: André van Schoubroeck
 Author URI: http://www.andrevanschoubroeck.name
 License: BSD
