@@ -2,13 +2,12 @@
 /*
 Plugin Name: BlaatSchaap Base
 Plugin URI: http://code.blaatschaap.be
-Description: Base code for all BlaatSchaap plugins
+Description: Common code for all BlaatSchaap plugin releases
 Version: 0.1
 Author: André van Schoubroeck
-Author URI: http://andre.blaatschaap.be
+Author URI: http://www.andrevanschoubroeck.name
 License: BSD
 */
-
 
 require_once("classes/BlaatSchaap.class.php");  // beginning a class
 require_once("classes/BlaatConfigOption.class.php");  // config generation

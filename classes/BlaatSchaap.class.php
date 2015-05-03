@@ -4,7 +4,11 @@ class BlaatSchaap {
 
     // TODO: dependency tester for example class_exists(SimpleXMLElement);
 
-
+  function DBTableExists($table_name){
+    // php.net/manual/en/function.method-exists.php
+    global $wpdb;
+    return ($wpdb->get_var("SHOW TABLES LIKE '$table_name'") == $table_name);
+  }
     
     
 //------------------------------------------------------------------------------
@@ -140,6 +144,29 @@ class BlaatSchaap {
     );
     return BlaatSchaap::xml2html($xmlroot, $echo);  
   }
+
+  function setupPageSelect(&$configOptions){
+    $item = $configOptions->name;
+    $pages = get_pages();
+    $selectedPageName = get_option($item);
+    $configOptions->default = $selectedPageName;
+
+    if ($selectedPageName==NULL) $selectedPageName="";
+    if (!strlen($selectedPageName)) {
+      $configOptions->addOption(new BlaatConfigSelectOption("",__("None")));    
+    }
+
+    foreach ( $pages as $page ) {
+      $pagename = $page->post_title;//$page->post_name;
+      $pageid = $page->ID;
+      $configOptions->addOption(new BlaatConfigSelectOption($pageid,$pagename));    
+    }
+  }
+
+
+
+
+
 
   function xml2html($xmlroot, $echo=true) {
     $dom_xml = dom_import_simplexml($xmlroot);
