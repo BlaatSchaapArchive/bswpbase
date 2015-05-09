@@ -35,7 +35,7 @@ if (!function_exists("blaat_plugins_page")) {
     }
     $plugins = get_plugins();
     function isBS($name){
-      return strpos($name, "BlaatSchaap") === 0;
+      return strpos($name, "Blaat") === 0;
     }
     echo "<p>";
     _e("Installed BlaatSchaap plugins:","blaatschaap");
